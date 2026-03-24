@@ -1,0 +1,82 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeClassifier
+
+#  cycle prediction
+def cycle_model(cycle_lengths):
+    X = np.array(range(len(cycle_lengths))).reshape(-1, 1)
+    y = np.array(cycle_lengths)
+
+    model = LinearRegression()
+    model.fit(X, y)
+
+    return model
+
+# Predict next cycle
+def predict_next_cycle(model, b):
+    return model.predict([[b]])[0]
+
+# AI-based PCOS risk 
+def pcos_model():
+    
+    X = [ [28, 2], [30, 3], [35, 6], [40, 8], [45, 9]]
+    
+    # [cycle_variation, symptom_score]
+
+    y = [0, 0, 1, 1, 2]  # 0=Low, 1=Medium, 2=High
+
+    c = DecisionTreeClassifier()
+    c.fit(X, y)
+
+    return c
+
+def predict_pcos_risk(model, variation, symptoms):
+    pred = model.predict([[variation, symptoms]])[0]
+
+    if pred == 0:
+        return "Low Risk"
+    elif pred == 1:
+        return "Medium Risk"
+    else:
+        return "High Risk"
+    # Example input
+cycle = [28, 30, 35, 40]
+
+#  cycle model
+cycle_model = cycle_model(cycle)
+
+# Predict next cycle
+next_cycle = predict_next_cycle(cycle_model, len(cycle))
+
+#  PCOS model
+pcos_model = pcos_model()
+
+# Calculate variation + symptoms
+variation = max(cycle) - min(cycle)
+symptoms = 7
+
+# Predict risk
+risk = predict_pcos_risk(pcos_model, variation, symptoms)
+
+# Print output
+print("Predicted Next Cycle:", round(next_cycle))
+print("PCOS Risk:", risk)
+import matplotlib.pyplot as plt
+cycles = [28, 30, 35, 40]
+
+# X-axis (cycle number)
+x = list(range(1, len(cycles) + 1))
+
+# Plot graph
+plt.plot(x, cycles, marker='o')
+
+# Labels
+plt.title("Menstrual Cycle Analysis")
+plt.xlabel("Cycle Number")
+plt.ylabel("Cycle Length (Days)")
+plt.grid()
+plt.show()
+
